@@ -1,6 +1,7 @@
-import * as type from "./type";
-import * as descriptor from "./compiler/descriptor";
+import * as type from "../../type.js";
+import * as descriptor from "../../compiler/descriptor.js";
 import * as ts from "typescript";
+import { Options } from '../../option.js';
 
 /**
  * Returns grpc-node compatible service description
@@ -1061,7 +1062,7 @@ export function createServiceClient(
     rootDescriptor: descriptor.FileDescriptorProto,
     serviceDescriptor: descriptor.ServiceDescriptorProto,
     grpcIdentifier: ts.Identifier,
-    options: import("./option").Options,
+    options: Options,
 ) {
     const members: Array<ts.ClassElement> = [
         ts.factory.createConstructorDeclaration(
