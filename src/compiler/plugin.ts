@@ -4,7 +4,7 @@
  * source: plugin.proto
  * git: https://github.com/thesayyn/protoc-gen-ts
  *  */
-import * as dependency_1 from "./descriptor";
+import * as dependency_1 from "./descriptor.js";
 import * as pb_1 from "google-protobuf";
 export class Version extends pb_1.Message {
     constructor(data?: any[] | {
