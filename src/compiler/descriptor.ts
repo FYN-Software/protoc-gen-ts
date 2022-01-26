@@ -5,15 +5,14 @@
  * git: https://github.com/thesayyn/protoc-gen-ts
  *  */
 import * as pb_1 from "google-protobuf";
+export type FileDescriptorSetMessage = {
+    file?: FileDescriptorProto[];
+};
 export class FileDescriptorSet extends pb_1.Message {
-    constructor(data?: any[] | {
-        file: FileDescriptorProto[];
-    }) {
+    constructor(data: FileDescriptorSetMessage = {}) {
         super();
-        pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [1], []);
-        if (!Array.isArray(data) && typeof data == "object") {
-            this.file = data.file;
-        }
+
+        this.file = data.file ?? [];
     }
     get file() {
         return pb_1.Message.getRepeatedWrapperField(this, FileDescriptorProto, 1) as FileDescriptorProto[];

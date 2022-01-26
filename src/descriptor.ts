@@ -524,7 +524,7 @@ function createMessageSignature(
 ): TypeNode {
     const oneOfSignatures = [];
 
-    for (const [index] of message.oneof_decl.entries())
+    for (const [ index ] of message.oneof_decl.entries())
     {
         const childSignatures = [];
 
@@ -1935,6 +1935,8 @@ function _createMessage(
     pbIdentifier: Identifier,
 ): ClassDeclaration
 {
+
+
     // Create message class
     return factory.createClassDeclaration(
         undefined,

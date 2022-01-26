@@ -1,4 +1,4 @@
 .github
 node_modules
-test
+spec
 esbuild.mjs

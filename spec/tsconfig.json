@@ -1,24 +1,18 @@
 {
     "include": [
-        "src/**/*.ts",
-    ],
-    "exclude": [
-        "lib/**/*.ts",
-        "node_modules/**/*"
+        "**/*.ts",
     ],
     "compilerOptions": {
         "lib": [ "esnext", "dom" ],
         "moduleResolution": "node",
         "module": "esnext",
         "target": "esnext",
-        "rootDir": "src",
-        "outDir": "lib",
         "strict": true,
         "esModuleInterop": true,
         "sourceMap": true,
         "declaration": true,
         "paths": {
-            "~/*": ["./src/*"]
+            "~/*": ["../src/*"]
         }
     },
 }
