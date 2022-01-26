@@ -1,11 +1,15 @@
 import {
-    ClassDeclaration,
-    ClassElement, Expression,
     factory,
+    SyntaxKind,
+    ModifierFlags,
+    ClassDeclaration,
+    ClassElement,
+    Expression,
     Identifier,
     MethodDeclaration,
-    ModifierFlags, ParameterDeclaration, Statement,
-    SyntaxKind, TypeNode, TypeReferenceNode,
+    ParameterDeclaration,
+    TypeNode,
+    TypeReferenceNode,
 } from 'typescript';
 import { FileDescriptorProto, MethodDescriptorProto, ServiceDescriptorProto } from '../../compiler/descriptor.js';
 import { Options } from '../../option.js';
@@ -68,11 +72,6 @@ export function createDefinition(
             ),
         ],
     );
-}
-
-export function createGrpcInterfaceType(): ClassElement[]
-{
-    return [];
 }
 
 /**
@@ -216,7 +215,7 @@ export function createServiceClient(
     rootDescriptor: FileDescriptorProto,
     serviceDescriptor: ServiceDescriptorProto,
     grpcIdentifier: Identifier,
-    params: Options,
+    options: Options,
 ): ClassDeclaration {
     const members: ClassElement[] = [
         // Add definition
@@ -276,11 +275,6 @@ export function createServiceClient(
         ],
         members,
     );
-}
-
-export function createUnimplementedServer()
-{
-    return
 }
 
 function getRPCOutputType(rootDescriptor: FileDescriptorProto, methodDescriptor: MethodDescriptorProto): TypeReferenceNode

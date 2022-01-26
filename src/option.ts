@@ -1,10 +1,12 @@
+import { __, match } from 'ts-pattern';
+
 export interface Options {
     unary_rpc_promise: boolean;
     grpc_package: string;
     style: 'grpc-js'|'async';
 }
 
-export function parse(raw?: string): Options
+export function parseInput(raw?: string): Options
 {
     if (!raw)
     {
@@ -17,29 +19,12 @@ export function parse(raw?: string): Options
         style: 'grpc-js',
     };
 
-    for (const raw_option of raw.split(','))
+    for (const [ k, v ] of raw.split(',').map(o => o.split('=', 2)).filter(([ k ]) => options.hasOwnProperty(k)) as [ keyof Options, string ][])
     {
-        let [ k, v ] = raw_option.split('=', 2);
-        let value: Options[keyof Options];
-
-        if (options.hasOwnProperty(k))
-        {
-            switch (typeof options[k]) {
-                case 'boolean':
-                {
-                    value = v !== 'false';
-                    break;
-                }
-
-                default:
-                {
-                    value = v;
-                    break;
-                }
-            }
-        }
-
-        options[k] = value
+        (options[k] as Options[keyof Options]) = match<string, Options[keyof Options]>(typeof options[k])
+            .with('boolean', () => v !== 'false')
+            .with(__, () => v)
+            .run();
     }
 
     return options;
