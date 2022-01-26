@@ -1,14 +1,2 @@
 node_modules
-compiled
-ast*.json
-*.txt
-bazel-*
-.devcontainer
-.editorconfig
-
-.DS_Store
-user.bazelrc
-
-src/**/*.js
-src/**/*.d.ts
-src/**/*.map
+lib
