@@ -18,7 +18,7 @@
     },
     "type": "module",
     "bin": {
-        "protoc-plugin-ts": "./bin/protoc-plugin-ts.js"
+        "protoc-gen-ts": "./bin/protoc-plugin-ts.js"
     },
     "dependencies": {
         "google-protobuf": "^3.13.0",
