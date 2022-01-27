@@ -2004,7 +2004,7 @@ export function createMessage(
 {
     return [
         _createMessage(file, message, pbIdentifier),
-        message.enum_type.length && message.nested_type.length
+        message.enum_type.length || message.nested_type.length
             ? createNamespace(message.name, [
                 // Create enums
                 ...message.enum_type.map(e => createEnum(e)),
