@@ -86,9 +86,8 @@ export function toBinaryMethodName(
     isWriter: boolean = true,
 ): string
 {
-    let typeName = FieldDescriptorProto.Type[field.type - 1].toLowerCase();
-    //lowercase first char
-    typeName = typeName.charAt(0).toUpperCase() + typeName.slice(1);
+    const typeName = Array.from(Object.keys(FieldDescriptorProto.Type)).filter(k => k.startsWith('TYPE_'))[field.type - 1]
+        .replace(/TYPE_(.)(.+)/, (_: string, l: string, w: string) => `${l}${w.toLowerCase()}`);
 
     const prefix = isPacked(file, field)
         ? 'Packed'

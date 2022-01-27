@@ -1,7 +1,7 @@
 import { Options, parseInput } from './option.js';
 import { FileDescriptorProto, ServiceDescriptorProto } from './compiler/descriptor.js';
 import { createEnum, createMessage, createNamespace } from './descriptor.js';
-import { preprocess, resetDependencyMap, setIdentifierForDependency } from './type.js';
+import { initialize, preprocess, resetDependencyMap, setIdentifierForDependency } from './type.js';
 import {
     factory,
     createPrinter,
@@ -32,7 +32,7 @@ interface Rpc
         grpcIdentifier: Identifier,
     ): ClassDeclaration;
     createGrpcInterfaceType?(grpcIdentifier: Identifier): InterfaceDeclaration[];
-    wrapInNamespace?(rootDescriptor: FileDescriptorProto): boolean;
+    wrapInNamespace?(rootDescriptor: FileDescriptorProto, options: Options): boolean;
 }
 
 function createImport(identifier: Identifier, moduleSpecifier: string): ImportDeclaration
@@ -64,6 +64,32 @@ function replaceExtension(filename: string, extension: string = '.ts'): string
     return filename.replace(/\.[^/.]+$/, extension);
 }
 
+function createStatements(
+    file: FileDescriptorProto,
+    grpcIdentifier: Identifier,
+    pbIdentifier: Identifier,
+    rpc: Rpc,
+    options: Options,
+): Statement[]
+{
+    return [
+        // Process enums
+        ...file.enum_type.map(enumDescriptor => createEnum(enumDescriptor)),
+
+        // Process messages
+        ...file.message_type.flatMap(message => createMessage(file, message, pbIdentifier)),
+
+        // Create interfaces
+        ...(rpc.createGrpcInterfaceType?.(grpcIdentifier) ?? []),
+
+        // Create services and clients
+        ...file.service.flatMap(service => [
+            rpc.createUnimplementedServer?.(file, service, grpcIdentifier),
+            rpc.createServiceClient?.(file, service, grpcIdentifier, options),
+        ].filter(c => c !== undefined) as ClassDeclaration[]),
+    ]
+}
+
 // Grab input in form of grpc request
 const request = CodeGeneratorRequest.deserialize(new Uint8Array(readFileSync(0)));
 
@@ -77,12 +103,9 @@ async function main()
         omitTrailingSemicolon: true,
     });
     const options = parseInput(request.parameter);
-    const {
-        createGrpcInterfaceType,
-        createUnimplementedServer,
-        createServiceClient,
-        wrapInNamespace,
-    }: Rpc = await import(`./style/${options.style}/rpc.js`);
+    const rpc: Rpc = await import(`./style/${options.style}/rpc.js`);
+
+    initialize(options);
 
     for (const protoFile of request.proto_file)
     {
@@ -92,58 +115,44 @@ async function main()
     // Create typescript files based on each given proto file
     const response = new CodeGeneratorResponse({
         file: request.proto_file.map(file => {
-            // Create all messages recursively
-            const statements: Statement[] = [
-                // Process enums
-                ...file.enum_type.map(enumDescriptor => createEnum(enumDescriptor)),
+            const sourceFile = factory.createSourceFile(
+                [
+                    // Create top "content is generated" comment
+                    createComment(file, request.compiler_version),
 
-                // Process messages
-                ...file.message_type.flatMap(message => createMessage(file, message, pbIdentifier)),
+                    // Create proto imports
+                    ...file.dependency.map(dependency => {
+                        const identifier = factory.createUniqueName(`dependency`);
 
-                // Create interfaces
-                ...(createGrpcInterfaceType?.(grpcIdentifier) ?? []),
+                        setIdentifierForDependency(dependency, identifier);
 
-                // Create services and clients
-                ...file.service.flatMap(service => [
-                    createUnimplementedServer?.(file, service, grpcIdentifier),
-                    createServiceClient?.(file, service, grpcIdentifier, options),
-                ].filter(c => c !== undefined) as ClassDeclaration[]),
-            ];
+                        return createImport(
+                            identifier,
+                            `./${relative(dirname(file.name), replaceExtension(dependency, ''))}`,
+                        );
+                    }),
+
+                    // Create default imports
+                    createImport(pbIdentifier, 'google-protobuf'),
+                    createImport(grpcIdentifier, options.grpc_package),
+
+                    // Create all messages recursively
+                    ...(rpc.wrapInNamespace?.(file, options) ?? false
+                            ? [ createNamespace(file.package, createStatements(file, grpcIdentifier, pbIdentifier, rpc, options)) ]
+                            : createStatements(file, grpcIdentifier, pbIdentifier, rpc, options)
+                    ),
+                ],
+                factory.createToken(SyntaxKind.EndOfFileToken),
+                NodeFlags.None,
+            );
+            // @ts-ignore
+            sourceFile.identifiers = new Set();
 
             resetDependencyMap();
 
             return new CodeGeneratorResponse.File({
                 name: replaceExtension(file.name),
-                content: printer.printFile(factory.createSourceFile(
-                    [
-                        // Create top "content is generated" comment
-                        createComment(file, request.compiler_version),
-
-                        // Create proto imports
-                        ...file.dependency.map(dependency => {
-                            const identifier = factory.createUniqueName(`dependency`);
-
-                            setIdentifierForDependency(dependency, identifier);
-
-                            return createImport(
-                                identifier,
-                                `./${relative(dirname(file.name), replaceExtension(dependency, ''))}`,
-                            );
-                        }),
-
-                        // Create default imports
-                        createImport(pbIdentifier, 'google-protobuf'),
-                        createImport(grpcIdentifier, options.grpc_package),
-
-                        // Add statements
-                        ...(wrapInNamespace?.(file) ?? false
-                                ? [ createNamespace(file.package, statements) ]
-                                : statements
-                        ),
-                    ],
-                    factory.createToken(SyntaxKind.EndOfFileToken),
-                    NodeFlags.None,
-                )),
+                content: printer.printFile(sourceFile),
             });
         }),
     });

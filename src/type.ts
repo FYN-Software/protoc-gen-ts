@@ -1,9 +1,17 @@
 import { factory, Identifier, PropertyAccessExpression, TypeReferenceNode } from 'typescript';
 import { DescriptorProto, FileDescriptorProto } from './compiler/descriptor.js';
+import { Options } from './option.js';
 
 const symbolMap: Map<string, string> = new Map();
 const dependencyMap: Map<string, Identifier> = new Map();
 const mapMap: Map<string, DescriptorProto> = new Map();
+const packages: string[] = [];
+let config: Options;
+
+export function initialize(configParameters: Options): void
+{
+    config = configParameters;
+}
 
 export function resetDependencyMap()
 {
@@ -32,9 +40,21 @@ export function getTypeReferenceExpr(
 {
     const path = symbolMap.get(typeName);
 
+    let name = removeLeadingDot(typeName);
+
+    if(config.no_namespace)
+    {
+        const prefix = packages.find(p => name.startsWith(p));
+
+        if(prefix)
+        {
+            name = name.replace(`${prefix}.`, '');
+        }
+    }
+
     return !path || !dependencyMap.has(path)
         ? factory.createIdentifier(removeRootPackageName(typeName, rootDescriptor.package))
-        : factory.createPropertyAccessExpression(dependencyMap.get(path)!, removeLeadingDot(typeName))
+        : factory.createPropertyAccessExpression(dependencyMap.get(path)!, name)
 }
 
 export function getTypeReference(
@@ -49,8 +69,20 @@ export function getTypeReference(
         return factory.createTypeReferenceNode(removeRootPackageName(typeName, rootDescriptor.package));
     }
 
+    let name = removeLeadingDot(typeName);
+
+    if(config.no_namespace)
+    {
+        const prefix = packages.find(p => name.startsWith(p));
+
+        if(prefix)
+        {
+            name = name.replace(`${prefix}.`, '');
+        }
+    }
+
     return factory.createTypeReferenceNode(
-        factory.createQualifiedName(dependencyMap.get(path)!, removeLeadingDot(typeName))
+        factory.createQualifiedName(dependencyMap.get(path)!, name)
     );
 }
 
@@ -73,6 +105,11 @@ export function preprocess(
     prefix: string,
 ): void
 {
+    if(target instanceof FileDescriptorProto)
+    {
+        packages.push(target.package);
+    }
+
     for (const enumDescriptor of target.enum_type) {
         symbolMap.set(replaceDoubleDots(`${prefix}.${enumDescriptor.name}`), path);
     }

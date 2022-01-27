@@ -12,12 +12,12 @@ await build({
 });
 
 await build({
-    entryPoints: [ 'src/index.ts' ],
+    entryPoints: await glob('src/**/*.ts'),
     outdir: 'lib',
     outbase: 'src',
-    bundle: true,
+    bundle: false, // protoc doesn't handle `bundle` well, so set to false
     sourcemap: true,
-    minify: true,
+    minify: false, // protoc doesn't handle `minify` well, so set to false
     format: 'cjs',
     platform: 'node',
     target: [ 'esnext' ],

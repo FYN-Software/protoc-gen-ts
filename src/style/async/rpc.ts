@@ -277,6 +277,11 @@ export function createServiceClient(
     );
 }
 
+export function wrapInNamespace(file: FileDescriptorProto, options: Options): boolean
+{
+    return options.no_namespace === false;
+}
+
 function getRPCOutputType(rootDescriptor: FileDescriptorProto, methodDescriptor: MethodDescriptorProto): TypeReferenceNode
 {
     return factory.createTypeReferenceNode(getTypeReferenceExpr(rootDescriptor, methodDescriptor.output_type) as Identifier);

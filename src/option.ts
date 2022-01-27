@@ -3,6 +3,7 @@ import { __, match } from 'ts-pattern';
 export interface Options {
     unary_rpc_promise: boolean;
     grpc_package: string;
+    no_namespace: boolean;
     style: 'grpc-js'|'async';
 }
 
@@ -16,6 +17,7 @@ export function parseInput(raw?: string): Options
     const options: Options = {
         unary_rpc_promise: false,
         grpc_package: "@grpc/grpc-js",
+        no_namespace: true,
         style: 'grpc-js',
     };
 
