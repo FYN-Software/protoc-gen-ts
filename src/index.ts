@@ -59,7 +59,8 @@ function createComment(fileDescriptor: FileDescriptorProto): Statement
     ) as Statement;
 }
 
-function replaceExtension(filename: string, extension: string = ".ts"): string {
+function replaceExtension(filename: string, extension: string = '.ts'): string
+{
     return filename.replace(/\.[^/.]+$/, extension);
 }
 
