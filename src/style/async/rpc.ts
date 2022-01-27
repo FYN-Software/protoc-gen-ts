@@ -212,10 +212,9 @@ function createRpcMethod(
 }
 
 export function createServiceClient(
-    rootDescriptor: FileDescriptorProto,
-    serviceDescriptor: ServiceDescriptorProto,
+    file: FileDescriptorProto,
+    service: ServiceDescriptorProto,
     grpcIdentifier: Identifier,
-    options: Options,
 ): ClassDeclaration {
     const members: ClassElement[] = [
         // Add definition
@@ -225,7 +224,7 @@ export function createServiceClient(
             'serviceName',
             undefined,
             undefined,
-            factory.createStringLiteral(serviceDescriptor.name),
+            factory.createStringLiteral(service.name),
         ),
 
         // Add constructor
@@ -250,9 +249,9 @@ export function createServiceClient(
         ),
 
         // Add methods
-        ...serviceDescriptor.method.flatMap((methodDescriptor: MethodDescriptorProto) => createRpcMethod(
-            rootDescriptor,
-            serviceDescriptor,
+        ...service.method.flatMap((methodDescriptor: MethodDescriptorProto) => createRpcMethod(
+            file,
+            service,
             methodDescriptor,
             grpcIdentifier,
         )),
@@ -263,7 +262,7 @@ export function createServiceClient(
         [
             factory.createModifier(SyntaxKind.ExportKeyword)
         ],
-        factory.createIdentifier(`${serviceDescriptor.name}Client`),
+        factory.createIdentifier(`${service.name}Client`),
         undefined,
         [
             factory.createHeritageClause(SyntaxKind.ExtendsKeyword, [
