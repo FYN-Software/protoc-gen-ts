@@ -18,7 +18,7 @@ await build({
     bundle: true,
     sourcemap: true,
     minify: true,
-    format: 'esm',
+    format: 'cjs',
     platform: 'node',
     target: [ 'esnext' ],
 });

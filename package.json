@@ -16,9 +16,8 @@
         "test": "jasmine",
         "build": "node ./esbuild.mjs && tsc --emitDeclarationOnly"
     },
-    "type": "module",
     "bin": {
-        "protoc-gen-ts": "./bin/protoc-plugin-ts.js"
+        "protoc-gen-ts": "./bin/index.js"
     },
     "dependencies": {
         "google-protobuf": "^3.13.0",
