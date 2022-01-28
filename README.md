@@ -1,8 +1,8 @@
-# Protoc Gen Typescript 
+# Protoc Plugin Typescript 
 
-[![test](https://github.com/thesayyn/protoc-gen-ts/actions/workflows/test.yaml/badge.svg?branch=master)](https://github.com/thesayyn/protoc-gen-ts/actions/workflows/test.yaml)
-![npm](https://img.shields.io/npm/v/protoc-gen-ts)
-![npm](https://img.shields.io/npm/dm/protoc-gen-ts)
+[![test](https://github.com/fyn-software/protoc-plugin-ts/actions/workflows/test.yaml/badge.svg?branch=master)](https://github.com/fyn-software/protoc-plugin-ts/actions/workflows/test.yaml)
+![npm](https://img.shields.io/npm/v/@fyn-software/protoc-plugin-ts)
+![npm](https://img.shields.io/npm/dm/@fyn-software/protoc-plugin-ts)
 
 Aim of this protoc plugin is to make usage of protocol buffers easy in Javascript/Typescript by taking modern approaches.  This plugin generates plain **Typescript** files that can be used AMD, UMD, CommonJS module systems.
 
@@ -62,101 +62,27 @@ console.log(receivedChange.name_or_id) // "name"
 console.log(receivedChange.author.name) // "mary poppins"
 ```
 
-## Support for Message.fromObject and Message.toObject
-
-When mapping raw json data to message classes, dealing with nested structures can be rather annoying.
-To overcome this problem, every generated message class has a static method called `fromObject` and `toObject` 
-which can handle the mapping bidirectionally for you, even with the deeply structured messages. since it is 
-aware of the field graph, it does not rely on any runtime type information thus we get the chance to keep it fast.
-
-One can write code as;
-
-```typescript
-const change = Change.fromObject({
-    kind: Kind.UPDATED,
-    patch: "@@ -7,11 +7,15 @@",
-    tags: ["no prefix", "as is"],
-    name: "patch for typescript 4.5",
-    author: {
-        name: "mary poppins",
-        role: "maintainer"
-    }
-});
-
-console.log(change.author instanceof Author) // true
-```
-
-
-## Usage with `@grpc/grpc-js` or `grpc`
-
-There is a seperate documentation for the usage of protoc-gen-ts along with either `@grpc/grpc-js` or `grpc`.  By default
-this generated gRPC interfaces will use `@grpc/grpc-js`.
-
-Checkout [rpcs](docs/rpc.md).
-
-## Key Differences
-
-This protoc plugin does generate;
-
-- Fields as **getter** **setters**.
-- No such prefixes as "getField" or "getFieldList". If you have repeated field named `users`, then the generated message class will have a `getter` named `users` not `getUsersList` 
-- Enums as **enums**.
-- Messages within a **namespace** if the proto has a **package** directive.
-
 
 ## Usage
-
-### Without Bazel
 ```properties
-npm install -g protoc-gen-ts
+npm install -g @fyn-software/protoc-plugin-ts
 
 protoc -I=sourcedir --ts_out=dist myproto.proto
-```
-### With Bazel
-```py
-# Add protoc-gen-ts to dependencies section of your package.json file.
-# Then use it like you would use the other bazel compatible npm packages.
-
-load("@npm//protoc-gen-ts//:index.bzl", "ts_proto_library")
-
-ts_proto_library(
-    name = "protos",
-    deps = [
-        ":some_proto_library_target"
-    ]
-)
-
-# Checkout the examples/bazel directory for an example.
 ```
 
 ## Supported Options
 
-* With `--ts_opt=unary_rpc_promise=true`, the service definition will contain a promise based rpc with a calling pattern of `const result = await client.METHOD(message)`.  Note: all othe `metadata` and `options` parameters are still available to you.
-
-* With `--ts_opt=grpc_package=xxxx`, you can specify a different package to import rather than `@grpc/grpc-js`.
-
-## Roadmap
-
-- <s>Support for repeated non-integer fields</s>
-- <s>Generate appropriate service code that is usable with node **grpc** package.</s>
-- <s>Support for creating protocol buffer messages directly from their constructors with an object.</s>
-- <s>Support for `import` directive.</s>
-- <s>Support for `Promise` in rpcs.</s>
-- <s>Make services strongly typed.</s>
-- <s>Support oneof fields</s>
-- <s>Support `map<TYPE, TYPE>` types as ES `Map`.</s>
-- Support grpc-web without any manual intervention.
-- Interopability with well knowns.
-
+| option                | type                     | default             | details                                                                                                                                                                                    |
+|-----------------------|--------------------------|---------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ~~unary_rpc_promise~~ | `bool`                   | `false`             | This option is here for legacy reasons, see [thesayyn/protoc-gen-ts](https://github.com/thesayyn/protoc-gen-ts) for details                                                                |
+| grpc_package          | `string`                 | `@fynsoftware/grpc` | you can specify which package to import                                                                                                                                                    |
+| style                 | `'async'` or `'grpc-js'` | `'async'`           | you can determine the style of generated code<ul><li>`async` is meant to be compatible with `@fynsoftware/grpc`</li><li>`grpc-js` is meant to be compatible with `@grpc/grpc-js`</li></ul> |
+| no_namespace          | `bool`                   | `true`              | you can enable/disable the generation of top-level namespace                                                                                                                               |
 
 ## Alternatives
 
-| Plugin | google-protobuf | Typescript | Declarations | gRPC Node | gRPC Web | ES6 Support | Notes |
-|------------------------------|-----------------|:----------:|:------------:|:---------:|:--------:|:-----------:|:-----------------------------------------------------------------------------------------------------------------------------------:|
-| thesayyn/protoc-gen-ts | Yes | Yes | Yes | Yes | Partial | Yes | The generated messages are compatible with ever-green browsers.<br>However, you might need to use third-party packages to use rpcs. |
-| improbable-eng/ts-protoc-gen | Yes | No | Yes | No | Yes | Partial | Drawback: You can't bundle generated files with rollup since<br>they are not >= ES6 compatible. |
-| stephenh/ts-proto | No | Yes | Yes | No | No | Yes | There is no support for rpcs.<br>See: https://github.com/stephenh/ts-proto/issues/2 |
-
+This project is forked from [thesayyn/protoc-gen-ts](https://github.com/thesayyn/protoc-gen-ts).
+If you prefer a larger community over the async interface generation simply use that over this.
 
 ## Development
 
@@ -164,25 +90,7 @@ Generates appropriate Protocol Buffer sources from Proto files directly through 
 
 ```sh
 # when you make changes to the plugin, you will have to run the command below
-yarn update_checked_in
+npm run build
 # then invoke the tests
-yarn test
-# additionally if you want to see error details
-yarn test --test_output=errors
-
+npm test
 ```
-
-## Contributors
-
-![GitHub Contributors Image](https://contrib.rocks/image?repo=thesayyn/protoc-gen-ts)
-
-
-## Support
-
-If you find this plugin useful please consider giving us a star to get into open collective.
-
-You can also support me directly by buying us some coffees.
-
-<a href="https://www.buymeacoffee.com/thesayyn">
-<img height="40px" src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=🙌&slug=thesayyn&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff">
-</a>

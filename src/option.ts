@@ -16,9 +16,9 @@ export function parseInput(raw?: string): Options
 
     const options: Options = {
         unary_rpc_promise: false,
-        grpc_package: "@grpc/grpc-js",
+        grpc_package: "@fyn-software/grpc",
         no_namespace: true,
-        style: 'grpc-js',
+        style: 'async',
     };
 
     for (const [ k, v ] of raw.split(',').map(o => o.split('=', 2)).filter(([ k ]) => options.hasOwnProperty(k)) as [ keyof Options, string ][])
