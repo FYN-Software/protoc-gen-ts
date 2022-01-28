@@ -1,6 +1,6 @@
 # Protoc Plugin Typescript 
 
-[![test](https://github.com/fyn-software/protoc-plugin-ts/actions/workflows/test.yaml/badge.svg?branch=master)](https://github.com/fyn-software/protoc-plugin-ts/actions/workflows/test.yaml)
+[![Release](https://github.com/FYN-Software/protoc-plugin-ts/actions/workflows/release.yml/badge.svg)](https://github.com/FYN-Software/protoc-plugin-ts/actions/workflows/release.yml)
 ![npm](https://img.shields.io/npm/v/@fyn-software/protoc-plugin-ts)
 ![npm](https://img.shields.io/npm/dm/@fyn-software/protoc-plugin-ts)
 
