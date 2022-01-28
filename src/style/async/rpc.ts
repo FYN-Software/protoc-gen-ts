@@ -132,7 +132,7 @@ function createRpcMethod(
         .with([ true, false ], () => 'ClientStream')
         .with([ false, true ], () => 'ServerStream')
         .with([ true, true ], () => 'BidiStream')
-        .exhaustive();
+        .run();
 
     const makeRequestCall = factory.createCallExpression(
         factory.createPropertyAccessExpression(
@@ -142,6 +142,8 @@ function createRpcMethod(
         [ requestType, responseType ],
         [
             factory.createStringLiteral(getRPCPath(rootDescriptor, serviceDescriptor, methodDescriptor)),
+            getTypeReferenceExpr(rootDescriptor, methodDescriptor.input_type),
+            getTypeReferenceExpr(rootDescriptor, methodDescriptor.output_type),
             factory.createIdentifier('request'),
             factory.createIdentifier('metadata'),
             factory.createIdentifier('options'),
