@@ -1,5 +1,5 @@
 {
-    "name": "@fyn-software/protoc-plugin-ts",
+    "name": "@kruining/protoc-plugin-ts",
     "description": "Compile protocol buffers descriptors to Typescript.",
     "version": "${ PACKAGE_VERSION }",
     "license": "MIT",
