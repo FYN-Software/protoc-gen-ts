@@ -4,13 +4,12 @@
     "version": "${ PACKAGE_VERSION }",
     "license": "MIT",
     "author": {
-        "email": "c.kruining@fyn.nl",
         "name": "Chris Kruining",
-        "url": "https://github.com/fyn-software"
+        "url": "https://github.com/chris-kruining"
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/fyn-software/protoc-plugin-ts"
+        "url": "https://github.com/chris-kruining/protoc-plugin-ts"
     },
     "scripts": {
         "test": "jasmine",
