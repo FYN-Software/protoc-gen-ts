@@ -1,8 +1,8 @@
 # Protoc Plugin Typescript 
 
-[![Release](https://github.com/FYN-Software/protoc-plugin-ts/actions/workflows/release.yml/badge.svg)](https://github.com/FYN-Software/protoc-plugin-ts/actions/workflows/release.yml)
-![npm](https://img.shields.io/npm/v/@fyn-software/protoc-plugin-ts)
-![npm](https://img.shields.io/npm/dm/@fyn-software/protoc-plugin-ts)
+[![Release](https://github.com/chris-kruining/protoc-plugin-ts/actions/workflows/release.yml/badge.svg)](https://github.com/chris-kruining/protoc-plugin-ts/actions/workflows/release.yml)
+![npm](https://img.shields.io/npm/v/@chris-kruining/protoc-plugin-ts)
+![npm](https://img.shields.io/npm/dm/@chris-kruining/protoc-plugin-ts)
 
 Aim of this protoc plugin is to make usage of protocol buffers easy in Javascript/Typescript by taking modern approaches.  This plugin generates plain **Typescript** files that can be used AMD, UMD, CommonJS module systems.
 
@@ -65,7 +65,7 @@ console.log(receivedChange.author.name) // "mary poppins"
 
 ## Usage
 ```properties
-npm install -g @fyn-software/protoc-plugin-ts
+npm install -g @chris-kruining/protoc-plugin-ts
 
 protoc -I=sourcedir --ts_out=dist myproto.proto
 ```
@@ -75,8 +75,8 @@ protoc -I=sourcedir --ts_out=dist myproto.proto
 | option                | type                     | default             | details                                                                                                                                                                                    |
 |-----------------------|--------------------------|---------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | ~~unary_rpc_promise~~ | `bool`                   | `false`             | This option is here for legacy reasons, see [thesayyn/protoc-gen-ts](https://github.com/thesayyn/protoc-gen-ts) for details                                                                |
-| grpc_package          | `string`                 | `@fynsoftware/grpc` | you can specify which package to import                                                                                                                                                    |
-| style                 | `'async'` or `'grpc-js'` | `'async'`           | you can determine the style of generated code<ul><li>`async` is meant to be compatible with `@fynsoftware/grpc`</li><li>`grpc-js` is meant to be compatible with `@grpc/grpc-js`</li></ul> |
+| grpc_package          | `string`                 | `@chris-kruining/grpc` | you can specify which package to import                                                                                                                                                    |
+| style                 | `'async'` or `'grpc-js'` | `'async'`           | you can determine the style of generated code<ul><li>`async` is meant to be compatible with `@chris-kruining/grpc`</li><li>`grpc-js` is meant to be compatible with `@grpc/grpc-js`</li></ul> |
 | no_namespace          | `bool`                   | `true`              | you can enable/disable the generation of top-level namespace                                                                                                                               |
 
 ## Alternatives
